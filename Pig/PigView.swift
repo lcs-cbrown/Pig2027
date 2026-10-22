@@ -9,17 +9,15 @@
 //  Roll a 1 and you lose your turn total, and your turn is over.
 //  Click Hold to bank your turn total into your score and end your turn.
 //
-//  WHAT IT DOES NOT DO YET
-//  Nobody can win! The scores just keep going up.
-//  In the real game, the first player to reach 100 points wins.
-//
+////  NEW IN LESSON 5
+//  The first player to bank 100 points or more wins.//
 
 import SwiftUI
 
 // Each player has their own colour.
 // TRY: Change these two colours. Try Color.purple, Color.green or Color.pink.
-let playerOneColor: Color = Color.blue
-let playerTwoColor: Color = Color.orange
+let playerOneColor: Color = Color.teal
+let playerTwoColor: Color = Color.pink
 
 // The game itself: what it remembers, what it shows on the screen,
 // and what it does when you click a button.
@@ -33,6 +31,10 @@ struct PigView: View {
     // The points each player has banked. Banked points are safe.
     @State var playerOneScore: Int = 0
     @State var playerTwoScore: Int = 0
+    // Becomes true when somebody wins.
+    @State var gameIsOver: Bool = false
+    // The first player to reach this score wins.
+    let winningScore: Int = 100
 
     // The points collected so far on this turn.
     // They are not safe until the player clicks Hold.
@@ -95,11 +97,18 @@ struct PigView: View {
 
             Spacer()
 
-            // Whose turn is it?
-            Text("Player \(currentPlayer), your turn")
-                .font(.title)
-                .bold()
-                .foregroundStyle(turnColor)
+            // Say whose turn it is, or that the game is over.
+            if !gameIsOver {
+                Text("Player \(currentPlayer), your turn")
+                    .font(.title)
+                    .bold()
+                    .foregroundStyle(turnColor)
+            } else {
+                Text("Game over")
+                    .font(.title)
+                    .bold()
+                    .foregroundStyle(turnColor)
+            }
 
             // The die.
             // TRY: Change the size of the die from 120 to something bigger or smaller.
@@ -125,11 +134,35 @@ struct PigView: View {
             HStack(spacing: 16) {
                 Button("Roll", systemImage: "dice") {
                     rollDie()
+                
+                    // Pick a random whole number from 1 to 6, just like a real die.
+                    let roll: Int = Int.random(in: 1...6)
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button("Hold", systemImage: "hand.raised.fill") {
                     hold()
+                    func hold() {
+                        if currentPlayer == 1 {
+                            playerOneScore += turnTotal
+                        } else {
+                            playerTwoScore += turnTotal
+                        }
+                 
+                        // Has either player reached the winning score?
+                        let someoneHasWon: Bool = hasWon(score: playerOneScore) || hasWon(score: playerTwoScore)
+                 
+                        if someoneHasWon {
+                            message = "Player \(currentPlayer) wins! Click New Game to play again."
+                            dieSymbol = "trophy.fill"
+                            turnTotal = 0
+                            gameIsOver = true
+                        } else {
+                            message = "Player \(currentPlayer) banked \(turnTotal) points."
+                            turnTotal = 0
+                            switchPlayer()
+                        }
+                    }
                 }
                 .buttonStyle(.bordered)
             }
@@ -137,9 +170,12 @@ struct PigView: View {
             .bold()
             .controlSize(.large)
             .tint(turnColor)
+            // Nobody can roll or hold once the game is over.
+                        .disabled(gameIsOver)
 
             Button("New Game") {
                 startNewGame()
+                gameIsOver = false
             }
         }
         .padding(32)
@@ -149,13 +185,20 @@ struct PigView: View {
     }
 
     // MARK: - Functions
-
+    // Picks a random whole number from 1 to 6, just like a real die.
+    func rollOneDie() -> Int {
+        let roll: Int = Int.random(in: 1...6)
+        return roll
+    }
+     
+    // Answers true when a score is high enough to win.
+    func hasWon(score: Int) -> Bool {
+        return score >= winningScore
+    }
     // Rolls the die once for the current player.
     func rollDie() {
 
-        // Pick a random whole number from 1 to 6, just like a real die.
-        let roll: Int = Int.random(in: 1...6)
-
+        let roll: Int = rollOneDie()
     
         rollsThisTurn += 1
         
