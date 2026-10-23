@@ -11,6 +11,9 @@
 //
 ////  NEW IN LESSON 5
 //  The first player to bank 100 points or more wins.//
+//  NEW FOR MAKE IT YOURS
+//  Added player 3 as well as an accesible button to remove and add it.
+//
 
 import SwiftUI
 
@@ -18,6 +21,7 @@ import SwiftUI
 // TRY: Change these two colours. Try Color.purple, Color.green or Color.pink.
 let playerOneColor: Color = Color.teal
 let playerTwoColor: Color = Color.pink
+let playerThreeColor: Color = Color.purple
 
 // The game itself: what it remembers, what it shows on the screen,
 // and what it does when you click a button.
@@ -31,6 +35,8 @@ struct PigView: View {
     // The points each player has banked. Banked points are safe.
     @State var playerOneScore: Int = 0
     @State var playerTwoScore: Int = 0
+    @State var playerThreeScore: Int = 0
+    @State var numberOfPlayers: Int = 2
     // Becomes true when somebody wins.
     @State var gameIsOver: Bool = false
     // The first player to reach this score wins.
@@ -93,6 +99,20 @@ struct PigView: View {
                 .padding()
                 .background(playerTwoColor.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
+                
+                if numberOfPlayers == 3 {
+                    VStack {
+                        Text("Player 3")
+                            .font(.headline)
+                        Text("\(playerThreeScore)")
+                            .font(.system(size: 48, weight: .bold))
+                            .monospacedDigit()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(playerThreeColor.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
             }
 
             Spacer()
@@ -135,34 +155,12 @@ struct PigView: View {
                 Button("Roll", systemImage: "dice") {
                     rollDie()
                 
-                    // Pick a random whole number from 1 to 6, just like a real die.
-                    let roll: Int = Int.random(in: 1...6)
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button("Hold", systemImage: "hand.raised.fill") {
                     hold()
-                    func hold() {
-                        if currentPlayer == 1 {
-                            playerOneScore += turnTotal
-                        } else {
-                            playerTwoScore += turnTotal
-                        }
-                 
-                        // Has either player reached the winning score?
-                        let someoneHasWon: Bool = hasWon(score: playerOneScore) || hasWon(score: playerTwoScore)
-                 
-                        if someoneHasWon {
-                            message = "Player \(currentPlayer) wins! Click New Game to play again."
-                            dieSymbol = "trophy.fill"
-                            turnTotal = 0
-                            gameIsOver = true
-                        } else {
-                            message = "Player \(currentPlayer) banked \(turnTotal) points."
-                            turnTotal = 0
-                            switchPlayer()
-                        }
-                    }
+
                 }
                 .buttonStyle(.bordered)
             }
@@ -173,6 +171,18 @@ struct PigView: View {
             // Nobody can roll or hold once the game is over.
                         .disabled(gameIsOver)
 
+            if numberOfPlayers == 2 {
+                Button("Add Player 3") {
+                    numberOfPlayers = 3
+                    startNewGame()
+                }
+            } else {
+                Button("Remove Player 3") {
+                    numberOfPlayers = 2
+                    startNewGame()
+                }
+            }
+            
             Button("New Game") {
                 startNewGame()
                 gameIsOver = false
@@ -185,6 +195,32 @@ struct PigView: View {
     }
 
     // MARK: - Functions
+    
+    
+    func hold() {
+        if currentPlayer == 1 {
+                    playerOneScore += turnTotal
+                } else if currentPlayer == 2 {
+                    playerTwoScore += turnTotal
+                } else {
+                    playerThreeScore += turnTotal
+                }
+
+                // Has any player reached the winning score?
+                let someoneHasWon: Bool = hasWon(score: playerOneScore) || hasWon(score: playerTwoScore) || hasWon(score: playerThreeScore)
+ 
+        if someoneHasWon {
+            message = "Player \(currentPlayer) wins! Click New Game to play again."
+            dieSymbol = "trophy.fill"
+            turnTotal = 0
+            gameIsOver = true
+        } else {
+            message = "Player \(currentPlayer) banked \(turnTotal) points."
+            turnTotal = 0
+            switchPlayer()
+        }
+    }
+    
     // Picks a random whole number from 1 to 6, just like a real die.
     func rollOneDie() -> Int {
         let roll: Int = Int.random(in: 1...6)
@@ -218,36 +254,38 @@ struct PigView: View {
         }
     }
 
-    // Banks the turn total into the current player's score, then ends the turn.
-    func hold() {
-        if currentPlayer == 1 {
-            playerOneScore += turnTotal
-        } else {
-            playerTwoScore += turnTotal
-        }
-        message = "Player \(currentPlayer) banked \(turnTotal) points."
-        turnTotal = 0
-        switchPlayer()
-    }
-
+    
     // Passes the turn to the other player.
     func switchPlayer() {
         rollsThisTurn = 0
  
         // The remainder does the switching: 1 becomes 2, and 2 becomes 1.
-        currentPlayer = currentPlayer % 2 + 1
- 
-        if currentPlayer == 1 {
-            turnColor = playerOneColor
-        } else {
-            turnColor = playerTwoColor
-        }
+        if numberOfPlayers == 2 {
+                    currentPlayer = currentPlayer % 2 + 1
+                } else {
+                    if currentPlayer == 1 {
+                        currentPlayer = 2
+                    } else if currentPlayer == 2 {
+                        currentPlayer = 3
+                    } else {
+                        currentPlayer = 1
+                    }
+                }
+
+                if currentPlayer == 1 {
+                    turnColor = playerOneColor
+                } else if currentPlayer == 2 {
+                    turnColor = playerTwoColor
+                } else {
+                    turnColor = playerThreeColor
+                }
     }
 
     // Sets everything back to the way it was at the start.
     func startNewGame() {
         playerOneScore = 0
         playerTwoScore = 0
+        playerThreeScore = 0
         turnTotal = 0
         currentPlayer = 1
         turnColor = playerOneColor
