@@ -11,8 +11,10 @@ You against the computer. Click a move, and the computer picks one at random.
 ## What I added
  
 - Nothing yet. This list grows as I work on Make It Yours.
+- I added a player 3 option that can be added and removed with a button.
  
 ## Credits
  
 - The starting game was written by Mr. Gordon.#  <#Title#>
+- The player 3 option: Gemini (in browser) suggested lines. I checked them and added them into Xcode.
 
