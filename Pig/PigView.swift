@@ -57,6 +57,7 @@ struct PigView: View {
     
     // The name of the SF Symbol that shows the die.
     @State var dieSymbol: String = "questionmark.square.fill"
+    @State var secondDieSymbol: String = "questionmark.square.fill"
 
     // A message that tells the players what just happened.
     @State var message: String = "Player 1 goes first. Click Roll to start."
@@ -132,9 +133,18 @@ struct PigView: View {
 
             // The die.
             // TRY: Change the size of the die from 120 to something bigger or smaller.
-            Image(systemName: dieSymbol)
-                .font(.system(size: 120))
-                .foregroundStyle(turnColor)
+            if gameIsOver {
+                            Image(systemName: "trophy.fill")
+                                .font(.system(size: 90))
+                                .foregroundStyle(turnColor)
+                        } else {
+                            HStack(spacing: 16) {
+                                Image(systemName: dieSymbol)
+                                Image(systemName: secondDieSymbol)
+                            }
+                            .font(.system(size: 90))
+                            .foregroundStyle(turnColor)
+                        }
 
             Text("Turn total: \(turnTotal)    Rolls: \(rollsThisTurn)")
                 .font(.title2)
@@ -211,7 +221,6 @@ struct PigView: View {
  
         if someoneHasWon {
             message = "Player \(currentPlayer) wins! Click New Game to play again."
-            dieSymbol = "trophy.fill"
             turnTotal = 0
             gameIsOver = true
         } else {
@@ -232,28 +241,29 @@ struct PigView: View {
         return score >= winningScore
     }
     // Rolls the die once for the current player.
-    func rollDie() {
+    // Rolls two dice for the current player.
+        func rollDie() {
+            let rollOne: Int = rollOneDie()
+            let rollTwo: Int = rollOneDie()
 
-        let roll: Int = rollOneDie()
-    
-        rollsThisTurn += 1
+            rollsThisTurn += 1
+
+            dieSymbol = "die.face.\(rollOne).fill"
+            secondDieSymbol = "die.face.\(rollTwo).fill"
+
+            if rollOne == 1 || rollTwo == 1 {
+                // Rolling a 1 on either die wipes out the turn total and ends the turn.
+                message = "Oh no, a 1! Player \(currentPlayer) loses \(turnTotal) points."
+                turnTotal = 0
+                switchPlayer()
+            } else {
+                // Any other combination adds normally.
+                let rollSum: Int = rollOne + rollTwo
+                turnTotal += rollSum
+                message = "You rolled \(rollSum). Roll again or hold?"
+            }
         
-        // Show the matching die face. For a roll of 4, the symbol is "die.face.4.fill".
-        dieSymbol = "die.face.\(roll).fill"
-
-        if roll == 1 {
-            // A 1 wipes out the turn total and ends the turn.
-            message = "Oh no, a 1! Player \(currentPlayer) loses \(turnTotal) points."
-            turnTotal = 0
-            switchPlayer()
-        } else {
-            // Any other roll is added to the turn total.
-            turnTotal += roll
-            // TRY: Change this message.
-            message = "You rolled a \(roll). Roll again, or hold?"
         }
-    }
-
     
     // Passes the turn to the other player.
     func switchPlayer() {
@@ -290,6 +300,7 @@ struct PigView: View {
         currentPlayer = 1
         turnColor = playerOneColor
         dieSymbol = "questionmark.square.fill"
+        secondDieSymbol = "questionmark.square.fill"
         message = "Player 1 goes first. Click Roll to start."
     }
 }
