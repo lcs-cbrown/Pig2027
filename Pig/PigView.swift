@@ -19,9 +19,9 @@ import SwiftUI
 
 // Each player has their own colour.
 // TRY: Change these two colours. Try Color.purple, Color.green or Color.pink.
-let playerOneColor: Color = Color.teal
-let playerTwoColor: Color = Color.pink
-let playerThreeColor: Color = Color.purple
+let playerOneColor: Color = Color.green
+let playerTwoColor: Color = Color.teal
+let playerThreeColor: Color = Color.blue
 
 // The game itself: what it remembers, what it shows on the screen,
 // and what it does when you click a button.
