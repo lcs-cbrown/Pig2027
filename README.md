@@ -4,9 +4,9 @@ You against the computer. Click a move, and the computer picks one at random.
  
 ## How to play
  
-1. Click **Rock**, **Paper**, or **Scissors**.
-2. The computer shows its move beside yours.
-3. Rock beats scissors, scissors beats paper, and paper beats rock.
+1. You roll a dice and have the option of keeping your number or rolling it again to add up.
+2. If you roll a one, your whole turn total is lost!
+3. The first person to 100 points wins. 
  
 ## What I added
  
