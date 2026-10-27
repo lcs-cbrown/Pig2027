@@ -61,6 +61,7 @@ struct PigView: View {
 
     // A message that tells the players what just happened.
     @State var message: String = "Player 1 goes first. Click Roll to start."
+    @State var confettiMessage: String = "🎉 🎊 ✨ 🎉 🎊 ✨ 🎉"
 
     // MARK: - Computed properties
 
@@ -137,6 +138,9 @@ struct PigView: View {
                             Image(systemName: "trophy.fill")
                                 .font(.system(size: 90))
                                 .foregroundStyle(turnColor)
+
+                            Text(confettiMessage)
+                                .font(.largeTitle)
                         } else {
                             HStack(spacing: 16) {
                                 Image(systemName: dieSymbol)
@@ -144,6 +148,7 @@ struct PigView: View {
                             }
                             .font(.system(size: 90))
                             .foregroundStyle(turnColor)
+                            
                         }
 
             Text("Turn total: \(turnTotal)    Rolls: \(rollsThisTurn)")
@@ -242,6 +247,7 @@ struct PigView: View {
     }
     // Rolls the die once for the current player.
     // Rolls two dice for the current player.
+    // Rolls two dice for the current player.
         func rollDie() {
             let rollOne: Int = rollOneDie()
             let rollTwo: Int = rollOneDie()
@@ -251,8 +257,20 @@ struct PigView: View {
             dieSymbol = "die.face.\(rollOne).fill"
             secondDieSymbol = "die.face.\(rollTwo).fill"
 
-            if rollOne == 1 || rollTwo == 1 {
-                // Rolling a 1 on either die wipes out the turn total and ends the turn.
+            if rollOne == 1 && rollTwo == 1 {
+                // Double 1s resets the player's total banked score AND turn total.
+                if currentPlayer == 1 {
+                    playerOneScore = 0
+                } else if currentPlayer == 2 {
+                    playerTwoScore = 0
+                } else {
+                    playerThreeScore = 0
+                }
+                message = "Double 1s! Player \(currentPlayer) loses their ENTIRE score!"
+                turnTotal = 0
+                switchPlayer()
+            } else if rollOne == 1 || rollTwo == 1 {
+                // Single 1 wipes out just the turn total and ends the turn.
                 message = "Oh no, a 1! Player \(currentPlayer) loses \(turnTotal) points."
                 turnTotal = 0
                 switchPlayer()
@@ -262,7 +280,6 @@ struct PigView: View {
                 turnTotal += rollSum
                 message = "You rolled \(rollSum). Roll again or hold?"
             }
-        
         }
     
     // Passes the turn to the other player.
