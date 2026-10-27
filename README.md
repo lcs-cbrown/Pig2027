@@ -13,10 +13,12 @@ You against the computer. Click a move, and the computer picks one at random.
 - Nothing yet. This list grows as I work on Make It Yours.
 - I added a player 3 option that can be added and removed with a button.
 - I added two dice, as well as a feature that when you roll only one die, your whole turn total is lost.
+- I added a feature that resets a player's total score if they roll dobule 1s.
  
 ## Credits
  
 - The starting game was written by Mr. Gordon.#  <#Title#>
 - The player 3 option: Gemini (in browser) suggested lines. I checked them and added them into Xcode.
 - The two dice option and feature: Gemini (in broswer) suggested lines. I checked them and added them into Xcode.
+- The resetting to 0 if roll double 1s/confetti feature: Gemini (in broswer) suggested lines. I checked them and added them into Xcode.
 
