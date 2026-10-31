@@ -49,6 +49,53 @@ The idea uses a `@State var`, `numberOfPlayers`, an `Int` that tracks whether 2 
             }
 ```
 
+ ** Two Dice **: This allows for two dice to now be rolled. If you roll one 1, it resets your turn total. If you roll two ones, it resets your entire current score. Any other combination of numbers is added.
+ 
+ The idea uses two `@State var` properties, `dieSymbol` and `secondDieSymbol`, both `Strings`, to display two dice images side-by-side using `HStack`. Inside `rollDie()`, two separate random numbers are generated using `rollOneDie()`. An if/else if chain checks the combined results: rolling a single 1 (`rollOne == 1 || rollTwo == 1`) resets `turnTotal = 0` and calls `switchPlayer()`, while rolling double 1s (`rollOne == 1 && rollTwo == 1`) uses conditional logic to reset the current player's banked score (`playerOneScore`, `playerTwoScore`, or `playerThreeScore`) back to 0 before ending their turn.
+ 
+ ```swift
+     @State var dieSymbol: String = "questionmark.square.fill"
+    @State var secondDieSymbol: String = "questionmark.square.fill"
+```
+
+```swift
+    func rollDie() {
+        let rollOne: Int = rollOneDie()
+        let rollTwo: Int = rollOneDie()
+        
+        rollsThisTurn += 1
+        
+        dieSymbol = "die.face.\(rollOne).fill"
+        secondDieSymbol = "die.face.\(rollTwo).fill"
+        
+        if rollOne == 1 && rollTwo == 1 {
+            // Double 1s resets the player's total banked score AND turn total.
+            if currentPlayer == 1 {
+                playerOneScore = 0
+            } else if currentPlayer == 2 {
+                playerTwoScore = 0
+            } else {
+                playerThreeScore = 0
+            }
+            message = "Double 1s! Player \(currentPlayer) loses their ENTIRE score!"
+            turnTotal = 0
+            switchPlayer()
+        } else if rollOne == 1 || rollTwo == 1 {
+            // Single 1 wipes out just the turn total and ends the turn.
+            message = "Oh no, a 1! Player \(currentPlayer) loses \(turnTotal) points."
+            turnTotal = 0
+            switchPlayer()
+        } else {
+            // Any other combination adds normally.
+            let rollSum: Int = rollOne + rollTwo
+            turnTotal += rollSum
+            message = "You rolled \(rollSum). Roll again or hold?"
+        }
+    }
+```
+
+
+
  
 ## Credits
  
