@@ -105,5 +105,11 @@ The idea uses a `@State var`, `numberOfPlayers`, an `Int` that tracks whether 2 
 - The resetting to 0 if roll double 1s/confetti feature: Gemini (in broswer) suggested lines. I checked them and added them into Xcode.
 
 ## Testing
+**Double Ones** 
+Chosen Input: Dice fixed at 1 and 1; Player 1’s score starts at 40 for the test; Player 1 rolls
+Should Happen: Player 1’s score goes from 40 to 0, and it is Player 2’s turn
+Did Happen: yes
+
+
 
 
